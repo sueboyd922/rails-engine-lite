@@ -1,7 +1,7 @@
 class MerchantSerializer
   def self.format_merchants(merchants)
     {
-      data: merchants.each do |merchant|
+      data: merchants.map do |merchant|
         {
           id: merchant.id,
           type: "merchant",
