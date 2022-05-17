@@ -18,6 +18,8 @@ RSpec.describe 'Items API' do
         expect(item).to have_key(:id)
         expect(item[:id]).to be_an String
 
+        expect(item[:type]).to eq("item")
+
         expect(item[:attributes]).to have_key(:description)
         expect(item[:attributes][:description]).to be_a String
 

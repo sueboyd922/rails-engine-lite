@@ -4,7 +4,7 @@ class ItemSerializer
       data: items.map do |item|
         {
           id: item.id.to_s,
-          type: "object",
+          type: "item",
           attributes: {
             name: item.name,
             description: item.description,
