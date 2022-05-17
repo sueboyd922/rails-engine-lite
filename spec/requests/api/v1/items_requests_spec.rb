@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Items API' do
   describe 'all items' do
     it 'returns all items' do
-      create_list(:item, 5)
+      merchant = create_list(:merchant, 1).first
+      create_list(:item, 5, merchant: merchant)
 
       get '/api/v1/items'
 
