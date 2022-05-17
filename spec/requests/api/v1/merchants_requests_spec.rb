@@ -21,7 +21,6 @@ RSpec.describe "Merchants API" do
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_a String
       end
-
     end
   end
 end
