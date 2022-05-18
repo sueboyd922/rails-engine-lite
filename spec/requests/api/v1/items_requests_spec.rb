@@ -155,5 +155,28 @@ RSpec.describe 'Items API' do
       delete "/api/v1/items/#{item.id + 1}"
       expect(response.status).to eq(404)
     end
+
+    it 'destroys invoices if it was only item on an invoice' do
+      merchant = create(:merchant)
+      customer = create(:customer)
+
+      items = create_list(:item, 3, merchant_id: merchant.id)
+      item_1 = items[0]
+      item_2 = items[1]
+      item_3 = items[2]
+
+      invoice_1 = Invoice.create!(merchant: merchant, customer: customer)
+      invoice_2 = Invoice.create!(merchant: merchant, customer: customer)
+
+      invoice_item_1 = InvoiceItem.create(item: item_1, invoice: invoice_1)
+      invoice_item_2 = InvoiceItem.create(item: item_1, invoice: invoice_2)
+      invoice_item_3 = InvoiceItem.create(item: item_2, invoice: invoice_2)
+
+      delete "/api/v1/items/#{item_1.id}"
+
+      expect(Item.exists?(item_1.id)).to be false
+      expect(Invoice.exists?(invoice_1.id)).to be false
+      expect(Invoice.exists?(invoice_2.id)).to be true
+    end
   end
 end
