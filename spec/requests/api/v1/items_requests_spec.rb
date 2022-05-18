@@ -135,4 +135,16 @@ RSpec.describe 'Items API' do
       expect(failed_item.merchant_id).to eq(merchant.id)
     end
   end
+
+  describe 'relationship with merchant' do
+    it 'can return the merchant info for an item' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      get "/api/v1/items/#{item.id}/merchant"
+
+      expect(response).to be_successful
+
+    end
+  end
 end
