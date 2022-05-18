@@ -10,7 +10,9 @@ class Api::V1::ItemsController < ApplicationController
 
   def create
     item = Item.new(item_params)
-    item.save
+     if item.save
+       render json: ItemSerializer.one_item(item), status: :created
+     end
   end
 
   private
