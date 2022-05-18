@@ -45,5 +45,22 @@ RSpec.describe "Merchants API" do
     end
   end
 
+  describe 'merchants items endpoint' do
+    it 'returns all items of a single merchant' do
+      merchants = create_list(:merchant, 2)
+      merchant_1 = merchants.first
+      merchant_2 = merchants.last
 
+      merch_1_items = create_list(:item, 5, merchant_id: merchant_1.id)
+      merch_2_items = create_list(:item, 3, merchant_id: merchant_2.id)
+
+      get "/api/v1/merchants/#{merchant_1.id}/items"
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
+      # require "pry"; binding.pry
+
+      expect(response).to be_successful
+
+
+    end
+  end
 end
