@@ -4,4 +4,8 @@ class Item < ApplicationRecord
   has_many :invoices, through: :invoice_items
 
   validates :name, :description, :unit_price, presence: true
+
+  def solo_invoices
+    require "pry"; binding.pry
+  end
 end

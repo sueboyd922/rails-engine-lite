@@ -168,9 +168,9 @@ RSpec.describe 'Items API' do
       invoice_1 = Invoice.create!(merchant: merchant, customer: customer)
       invoice_2 = Invoice.create!(merchant: merchant, customer: customer)
 
-      invoice_item_1 = InvoiceItem.create(item: item_1, invoice: invoice_1)
-      invoice_item_2 = InvoiceItem.create(item: item_1, invoice: invoice_2)
-      invoice_item_3 = InvoiceItem.create(item: item_2, invoice: invoice_2)
+      invoice_item_1 = InvoiceItem.create!(item: item_1, invoice: invoice_1)
+      invoice_item_2 = InvoiceItem.create!(item: item_1, invoice: invoice_2)
+      invoice_item_3 = InvoiceItem.create!(item: item_2, invoice: invoice_2)
 
       delete "/api/v1/items/#{item_1.id}"
 
