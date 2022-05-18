@@ -65,4 +65,23 @@ RSpec.describe 'Items API' do
       expect(item[:attributes][:merchant_id]).to be_an Integer
     end
   end
+
+  describe 'create/update/delete functionality' do
+    it 'can create a new item' do
+      merchant = create_list(:merchant, 1).first
+      item_params = {
+              name: "Firebolt",
+              description: "Go really fast",
+              unit_price: 895.23,
+              merchant_id: merchant.id
+                }
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+      new_item = Item.last
+
+      expect(response).to be_successful
+    end
+  end
 end
