@@ -100,6 +100,15 @@ RSpec.describe "Merchants API" do
         get "/api/v1/merchants/find?name=Sandy"
 
         expect(response).to be_successful
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        found_merchant = merchant_response[:data]
+
+        expect(found_merchant).to be_a Hash
+        expect(found_merchant).to have_key(:id)
+        expect(found_merchant[:id]).to be_a String
+        expect(found_merchant[:attributes]).to have_key(:name)
+        expect(found_merchant[:attributes][:name]).to eq("Sammy's Sandy Sandwiches")
+        expect(found_merchant[:type]).to eq("merchant")
       end
     end
   end
