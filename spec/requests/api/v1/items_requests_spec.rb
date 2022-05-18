@@ -104,4 +104,21 @@ RSpec.describe 'Items API' do
       expect(response.status).to eq(400)
     end
   end
+
+  describe 'update functionality' do
+    it 'can update an item' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+      original_name = item.name
+      item_params = {name: "Funky Candle"}
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate({item: item_params})
+      updated_item = Item.find(item.id)
+
+      expect(response).to be_successful
+      expect(updated_item.name).not_to eq(original_name)
+      expect(updated_item.name).to eq("Funky Candle")
+    end
+  end
 end
