@@ -144,7 +144,17 @@ RSpec.describe 'Items API' do
       get "/api/v1/items/#{item.id}/merchant"
 
       expect(response).to be_successful
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
+      returned_merchant = merchant_response[:data]
+      # require "pry"; binding.pry
+      expect(returned_merchant).to have_key(:id)
+      expect(returned_merchant[:id]).to be_a String
 
+      expect(returned_merchant).to have_key(:type)
+      expect(returned_merchant[:type]).to eq("merchant")
+
+      expect(returned_merchant[:attributes]).to have_key(:name)
+      expect(returned_merchant[:attributes][:name]).to be_a String
     end
   end
 end
