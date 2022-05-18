@@ -26,6 +26,11 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+  def find_all
+    items = Item.find_all_by_name(params[:name])
+    render json: ItemSerializer.format_items(items)
+  end
+
   private
     def item_params
       params.require(:item).permit(:name, :description, :merchant_id, :unit_price)

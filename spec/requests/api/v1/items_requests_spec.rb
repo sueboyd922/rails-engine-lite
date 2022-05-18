@@ -179,10 +179,10 @@ RSpec.describe 'Items API' do
         get "/api/v1/items/find_all?name=egg"
         expect(response).to be_successful
 
-        items_response = JSON.parse(response.body, sybmolize_names: true)
+        items_response = JSON.parse(response.body, symbolize_names: true)
         item_results = items_response[:data]
-
-        expect(item_results).to_be an Array
+        
+        expect(item_results).to be_an Array
         expect(item_results.count).to eq(2)
         item_results.each do |item|
           expect(item[:attributes][:name].include?("egg")).to be true
