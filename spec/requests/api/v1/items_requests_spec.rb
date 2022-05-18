@@ -66,7 +66,7 @@ RSpec.describe 'Items API' do
     end
   end
 
-  describe 'create/update/delete functionality' do
+  describe 'create functionality' do
     it 'can create a new item' do
       merchant = create_list(:merchant, 1).first
       item_params = {
@@ -88,6 +88,20 @@ RSpec.describe 'Items API' do
       expect(new_item.description).to eq(item_params[:description])
       expect(new_item.unit_price).to eq(item_params[:unit_price])
       expect(new_item.merchant_id).to eq(item_params[:merchant_id])
+    end
+
+    it 'only creates it if all attributes are present' do
+      merchant = create_list(:merchant, 1).first
+      item_params = {
+              name: "Firebolt",
+              unit_price: 895.23,
+              merchant_id: merchant.id
+                }
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response.status).to eq(400)
     end
   end
 end

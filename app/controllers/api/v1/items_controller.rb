@@ -12,6 +12,8 @@ class Api::V1::ItemsController < ApplicationController
     item = Item.new(item_params)
      if item.save
        render json: ItemSerializer.one_item(item), status: :created
+     else
+       render json: ItemSerializer.one_item(item), status: 400
      end
   end
 
