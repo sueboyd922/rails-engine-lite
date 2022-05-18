@@ -27,7 +27,7 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find_all
-    if params[:name].empty?
+    if params[:name].nil? || params[:name].empty?
       render status: 400
     else
       items = Item.find_all_by_name(params[:name])

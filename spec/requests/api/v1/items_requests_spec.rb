@@ -172,7 +172,7 @@ RSpec.describe 'Items API' do
       it 'finds all items from a search' do
         merchant = create(:merchant)
         item_1 = create(:item, name: "Broomstick", merchant: merchant)
-        item_2 = create(:item, name: "Dragon egg", merchant: merchant)
+        item_2 = create(:item, name: "Dragon Egg", merchant: merchant)
         item_3 = create(:item, name: "Dozen eggs", merchant: merchant)
         item_4 = create(:item, name: "Emu feather", merchant: merchant)
 
@@ -185,14 +185,14 @@ RSpec.describe 'Items API' do
         expect(item_results).to be_an Array
         expect(item_results.count).to eq(2)
         item_results.each do |item|
-          expect(item[:attributes][:name].include?("egg")).to be true
+          expect(item[:attributes][:name].downcase.include?("egg")).to be true
         end
       end
 
       it 'returns an empty array if no results found' do
         merchant = create(:merchant)
         item_1 = create(:item, name: "Broomstick", merchant: merchant)
-        item_2 = create(:item, name: "Dragon egg", merchant: merchant)
+        item_2 = create(:item, name: "Dragon Egg", merchant: merchant)
         item_3 = create(:item, name: "Dozen eggs", merchant: merchant)
         item_4 = create(:item, name: "Emu feather", merchant: merchant)
 
@@ -209,11 +209,17 @@ RSpec.describe 'Items API' do
       it 'returns an error if no search is entered' do
         merchant = create(:merchant)
         item_1 = create(:item, name: "Broomstick", merchant: merchant)
-        item_2 = create(:item, name: "Dragon egg", merchant: merchant)
+        item_2 = create(:item, name: "Dragon Egg", merchant: merchant)
         item_3 = create(:item, name: "Dozen eggs", merchant: merchant)
         item_4 = create(:item, name: "Emu feather", merchant: merchant)
 
         get "/api/v1/items/find_all?name="
+
+        expect(response.status).to eq(400)
+      end
+
+      it 'returns an error if parameter is missing' do
+        get "/api/v1/items/find_all"
 
         expect(response.status).to eq(400)
       end
