@@ -143,8 +143,17 @@ RSpec.describe 'Items API' do
 
       delete "/api/v1/items/#{item.id}"
       expect(response).to be_successful
+      expect(response.status).to eq(204)
       expect(Item.count).to be(0)
       expect(Item.exists?(item.id)).to be false
+    end
+
+    it 'throws an error if item does not exist' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      delete "/api/v1/items/#{item.id + 1}"
+      expect(response.status).to eq(404)
     end
   end
 end
