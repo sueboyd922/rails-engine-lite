@@ -16,12 +16,77 @@ RSpec.describe "Merchants API" do
 
       merchants.each do |merchant|
         expect(merchant).to have_key(:id)
-        expect(merchant[:id]).to be_an Integer
+        expect(merchant[:id]).to be_a String
 
         expect(merchant[:type]).to eq("merchant")
 
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_a String
+      end
+    end
+  end
+
+  describe 'one merchant' do
+    it 'gets the info from one merchant' do
+      merchant = create_list(:merchant, 1).first
+
+      get "/api/v1/merchants/#{merchant.id}"
+
+      expect(response).to be_successful
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
+      merchant = merchant_response[:data]
+
+      expect(merchant).to be_a Hash
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a String
+      expect(merchant[:attributes]).to have_key(:name)
+      expect(merchant[:attributes][:name]).to be_a String
+      expect(merchant[:type]).to eq("merchant")
+    end
+  end
+
+  describe 'merchants items endpoint' do
+    it 'returns all items of a single merchant' do
+      merchants = create_list(:merchant, 2)
+      merchant_1 = merchants.first
+      merchant_2 = merchants.last
+
+      merch_1_items = create_list(:item, 5, merchant_id: merchant_1.id)
+      merch_2_items = create_list(:item, 3, merchant_id: merchant_2.id)
+
+      get "/api/v1/merchants/#{merchant_1.id}/items"
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
+      items = merchant_response[:data]
+
+      expect(response).to be_successful
+      expect(items.count).to eq(5)
+
+      items_ids = items.map {|item| item[:id].to_i}
+      merch_2_items.each do |item|
+        expect(items_ids.include?(item.id)).to be false
+      end
+      merch_1_items.each do |item|
+        expect(items_ids.include?(item.id)).to be true
+      end
+
+      items.each do |item|
+        expect(item).to have_key(:id)
+        expect(item[:id]).to be_a String
+
+        expect(item).to have_key(:type)
+        expect(item[:type]).to eq("item")
+
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes][:name]).to be_a String
+
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes][:description]).to be_a String
+
+        expect(item[:attributes]).to have_key(:unit_price)
+        expect(item[:attributes][:unit_price]).to be_a Float
+
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_a Integer
       end
     end
   end

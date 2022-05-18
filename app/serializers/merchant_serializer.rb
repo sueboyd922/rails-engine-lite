@@ -3,13 +3,25 @@ class MerchantSerializer
     {
       data: merchants.map do |merchant|
         {
-          id: merchant.id,
+          id: merchant.id.to_s,
           type: "merchant",
           attributes: {
             name: merchant.name
           }
         }
       end
+    }
+  end
+
+  def self.one_merchant(merchant)
+    {
+      data: {
+        id: merchant.id.to_s,
+        type: "merchant",
+        attributes: {
+          name: merchant.name
+        }
+      }
     }
   end
 end
