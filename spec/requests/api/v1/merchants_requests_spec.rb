@@ -122,8 +122,8 @@ RSpec.describe "Merchants API" do
         expect(response).to be_successful
         merchant_response = JSON.parse(response.body, symbolize_names: true)
         found_merchant = merchant_response[:data]
-
-        expect(found_merchant.count).to eq(1)
+        
+        expect(found_merchant.class).to eq Hash
         expect(found_merchant[:attributes][:name]).to eq("All the Meat")
       end
     end
