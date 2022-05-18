@@ -113,12 +113,26 @@ RSpec.describe 'Items API' do
       item_params = {name: "Funky Candle"}
       headers = {"CONTENT_TYPE" => "application/json"}
 
-      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate({item: item_params})
+      put "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate({item: item_params})
       updated_item = Item.find(item.id)
-
       expect(response).to be_successful
       expect(updated_item.name).not_to eq(original_name)
       expect(updated_item.name).to eq("Funky Candle")
+    end
+
+    it "returns an error if merchant_id doesn't exist" do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+      new_merchant_id = merchant.id + 1
+      item_params = {merchant_id: new_merchant_id}
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      put "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate({item: item_params})
+
+      expect(response.status).to eq(404)
+      failed_item = Item.find(item.id)
+      expect(failed_item.merchant_id).not_to eq(new_merchant_id)
+      expect(failed_item.merchant_id).to eq(merchant.id)
     end
   end
 end
