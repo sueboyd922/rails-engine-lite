@@ -60,7 +60,15 @@ RSpec.describe "Merchants API" do
 
       expect(response).to be_successful
       expect(items.count).to eq(5)
-      
+
+      items_ids = items.map {|item| item[:id].to_i}
+      merch_2_items.each do |item|
+        expect(items_ids.include?(item.id)).to be false
+      end
+      merch_1_items.each do |item|
+        expect(items_ids.include?(item.id)).to be true
+      end
+
       items.each do |item|
         expect(item).to have_key(:id)
         expect(item[:id]).to be_a String
@@ -80,8 +88,6 @@ RSpec.describe "Merchants API" do
         expect(item[:attributes]).to have_key(:merchant_id)
         expect(item[:attributes][:merchant_id]).to be_a Integer
       end
-
-
     end
   end
 end
