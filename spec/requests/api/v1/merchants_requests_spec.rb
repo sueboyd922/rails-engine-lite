@@ -90,4 +90,17 @@ RSpec.describe "Merchants API" do
       end
     end
   end
+
+  describe 'search endpoints' do
+    describe 'find one merchant' do
+      it 'finds one merchant from a search' do
+        create_list(:merchant, 4)
+        merchant = Merchant.create!(name: "Sammy's Sandy Sandwiches")
+
+        get "/api/v1/merchants/find?name=Sandy"
+
+        expect(response).to be_successful
+      end
+    end
+  end
 end
