@@ -27,8 +27,12 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find_all
-    items = Item.find_all_by_name(params[:name])
-    render json: ItemSerializer.format_items(items)
+    if params[:name].empty?
+      render status: 400
+    else
+      items = Item.find_all_by_name(params[:name])
+      render json: ItemSerializer.format_items(items)
+    end
   end
 
   private
