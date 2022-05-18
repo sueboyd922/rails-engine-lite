@@ -40,9 +40,24 @@ RSpec.describe 'Items API' do
 
       get "/api/v1/items/#{item.id}"
 
-      items_response = JSON.parse(response.body, symbolize_names: true)
+      item_response = JSON.parse(response.body, symbolize_names: true)
+      item = item_response[:data]
 
       expect(response).to be_successful
+
+      expect(item).to be_a Hash
+      expect(item).to have_key(:id)
+      expect(item[:id]).to be_a String
+      expect(item).to have_key(:type)
+      expect(item[:type]).to eq("item")
+      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes][:name]).to be_a String
+      expect(item[:attributes]).to have_key(:description)
+      expect(item[:attributes][:description]).to be_a String
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to be_a Float
+      expect(item[:attributes]).to have_key(:merchant_id)
+      expect(item[:attributes][:merchant_id]).to be_an Integer
     end
   end
 end
