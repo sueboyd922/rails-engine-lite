@@ -31,4 +31,18 @@ RSpec.describe 'Items API' do
       end
     end
   end
+
+  describe 'one item' do
+    it 'returns info for one item' do
+      merchant = create_list(:merchant, 1).first
+      create_list(:item, 5, merchant: merchant)
+      item = Item.last
+
+      get "/api/v1/items/#{item.id}"
+
+      items_response = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to be_successful
+    end
+  end
 end
