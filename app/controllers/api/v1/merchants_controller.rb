@@ -9,6 +9,7 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def find
-    merchant = Merchant.find_by_name(params[:name])
+    merchant = Merchant.find_by_name(params[:name]).first
+    render json: MerchantSerializer.one_merchant(merchant)
   end
 end
