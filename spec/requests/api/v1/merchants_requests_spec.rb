@@ -114,7 +114,7 @@ RSpec.describe "Merchants API" do
       it 'returns the first match in alphabetical order' do
         merchant_1 = Merchant.create!(name: "Meat my Cows")
         merchant_2 = Merchant.create!(name: "Veggie Bonanza")
-        merchant_3 = Merchant.create!(name: "All the Meat")
+        merchant_3 = Merchant.create!(name: "All the Meats")
         merchant_4 = Merchant.create!(name: "Viva las Veggies")
 
         get "/api/v1/merchants/find?name=meat"
@@ -122,9 +122,25 @@ RSpec.describe "Merchants API" do
         expect(response).to be_successful
         merchant_response = JSON.parse(response.body, symbolize_names: true)
         found_merchant = merchant_response[:data]
-        
+
         expect(found_merchant.class).to eq Hash
-        expect(found_merchant[:attributes][:name]).to eq("All the Meat")
+        expect(found_merchant[:attributes][:name]).to eq("All the Meats")
+      end
+
+      it 'can return an empty result' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find?name=chicken"
+
+        expect(response.status).to eq(200)
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        no_results = merchant_response[:data]
+
+        expect(no_results).to be_a Hash
+        expect(no_results.empty?).to be true
       end
     end
   end
