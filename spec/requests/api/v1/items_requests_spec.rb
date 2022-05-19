@@ -187,6 +187,8 @@ RSpec.describe 'Items API' do
       expect(Invoice.exists?(invoice_3.id)).to be true
       expect(invoice_2.invoice_items.count).to be 1
       expect(invoice_3.invoice_items.count).to be 2
+    end
+  end
 
   describe 'relationship with merchant' do
     it 'can return the merchant info for an item' do
