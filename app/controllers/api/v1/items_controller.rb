@@ -28,12 +28,38 @@ class Api::V1::ItemsController < ApplicationController
 
 
   def find_all
-    if params[:name].nil? || params[:name].empty?
+    find_alls = params.except(:controller, :action)
+    if find_alls.empty? || find_alls.values.include?("")
       render status: 400
-    else
-      items = Item.find_all_by_name(params[:name])
-      render json: ItemSerializer.format_items(items)
+    elsif find_alls.keys.count == 3
+      render status: 400
+    elsif find_alls.keys.count == 2
+      if find_alls.keys.include?(:name)
+        render status: 400
+      else
+        # find both min and max
+      end
+    elsif find_alls.keys.count == 1
+      if params[:name]
+        items = Item.find_all_by_name(params[:name])
+        render json: ItemSerializer.format_items(items)
+      elsif params[:min_price]
+        items = Item.find_all_by_price("min", params[:min_price])
+        render json: ItemSerializer.format_items(items)
+      elsif params[:max_price]
+          #serializer for max
+      end
     end
+
+    # if params.keys.count == 2
+    #   render status: 400
+    # elsif params[:name].empty?
+    #   render status: 400
+    # elsif params[:name]
+    #   items = Item.find_all_by_name(params[:name])
+    #   render json: ItemSerializer.format_items(items)
+    # elsif params[:min_price]
+    # end
   end
 
   def destroy

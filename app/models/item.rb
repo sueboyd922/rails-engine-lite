@@ -17,4 +17,10 @@ class Item < ApplicationRecord
     .group(:id)
     wip.select {|invoice| invoice.item_count == 1}
   end
+
+  def self.find_all_by_price(level, search)
+    if level == "min"
+      where("unit_price >= ?", search)
+    end
+  end
 end

@@ -278,7 +278,7 @@ RSpec.describe 'Items API' do
         expect(response.status).to eq(400)
       end
 
-      xit 'finds items by min price' do
+      it 'finds items by min price' do
         merchant = create(:merchant)
         item_1 = create(:item, merchant_id: merchant.id, unit_price: 3.90)
         item_2 = create(:item, merchant_id: merchant.id, unit_price: 8.99)
