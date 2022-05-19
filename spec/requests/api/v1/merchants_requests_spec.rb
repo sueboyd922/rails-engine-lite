@@ -196,6 +196,44 @@ RSpec.describe "Merchants API" do
           expect(merchant[:attributes][:name].downcase.include?("veggie")).to be true
         end
       end
+
+      it 'can return an empty result' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find_all?name=chicken"
+
+        expect(response.status).to eq(200)
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        no_results = merchant_response[:data]
+
+        expect(no_results).to be_an Array
+        expect(no_results.empty?).to be true
+      end
+
+      it 'returns an error when the search is empty' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find_all?name="
+
+        expect(response.status).to eq(400)
+      end
+
+      it 'returns an error when the parameter is missing' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find_all"
+
+        expect(response.status).to eq(400)
+      end
     end
   end
 end
