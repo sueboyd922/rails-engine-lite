@@ -33,6 +33,8 @@ class Api::V1::ItemsController < ApplicationController
     else
       items = Item.find_all_by_name(params[:name])
       render json: ItemSerializer.format_items(items)
+    end
+  end
 
   def destroy
     if Item.exists?(params[:id])
@@ -41,7 +43,6 @@ class Api::V1::ItemsController < ApplicationController
       item.destroy
     else
       render status: 404
-
     end
   end
 
