@@ -90,4 +90,58 @@ RSpec.describe "Merchants API" do
       end
     end
   end
+
+  describe 'search endpoints' do
+    describe 'find one merchant' do
+      it 'finds one merchant from a search' do
+        create_list(:merchant, 4)
+        merchant = Merchant.create!(name: "Sammy's Sandy Sandwiches")
+
+        get "/api/v1/merchants/find?name=Sandy"
+
+        expect(response).to be_successful
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        found_merchant = merchant_response[:data]
+
+        expect(found_merchant).to be_a Hash
+        expect(found_merchant).to have_key(:id)
+        expect(found_merchant[:id]).to be_a String
+        expect(found_merchant[:attributes]).to have_key(:name)
+        expect(found_merchant[:attributes][:name]).to eq("Sammy's Sandy Sandwiches")
+        expect(found_merchant[:type]).to eq("merchant")
+      end
+
+      it 'returns the first match in alphabetical order' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find?name=meat"
+
+        expect(response).to be_successful
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        found_merchant = merchant_response[:data]
+
+        expect(found_merchant.class).to eq Hash
+        expect(found_merchant[:attributes][:name]).to eq("All the Meats")
+      end
+
+      it 'can return an empty result' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find?name=chicken"
+
+        expect(response.status).to eq(200)
+        merchant_response = JSON.parse(response.body, symbolize_names: true)
+        no_results = merchant_response[:data]
+
+        expect(no_results).to be_a Hash
+        expect(no_results.empty?).to be true
+      end
+    end
+  end
 end
