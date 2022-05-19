@@ -167,16 +167,18 @@ RSpec.describe 'Items API' do
 
       invoice_1 = Invoice.create!(merchant: merchant, customer: customer)
       invoice_2 = Invoice.create!(merchant: merchant, customer: customer)
-
+      # require "pry"; binding.pry
       invoice_item_1 = InvoiceItem.create!(item: item_1, invoice: invoice_1)
       invoice_item_2 = InvoiceItem.create!(item: item_1, invoice: invoice_2)
       invoice_item_3 = InvoiceItem.create!(item: item_2, invoice: invoice_2)
 
+      expect(invoice_2.invoice_items.count).to eq 2
       delete "/api/v1/items/#{item_1.id}"
 
       expect(Item.exists?(item_1.id)).to be false
       expect(Invoice.exists?(invoice_1.id)).to be false
       expect(Invoice.exists?(invoice_2.id)).to be true
+      expect(invoice_2.invoice_items.count).to be 1
     end
   end
 end

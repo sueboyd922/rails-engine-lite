@@ -6,6 +6,8 @@ class Item < ApplicationRecord
   validates :name, :description, :unit_price, presence: true
 
   def solo_invoices
-    require "pry"; binding.pry
+    wip = invoices.find_by_sql("SELECT invoices.*, count(invoice_items) FROM invoices INNER JOIN invoice_items ON invoice_items.invoice_id = invoices.id GROUP BY invoices.id")
+    wip.select {|invoice| invoice.count == 1}
+    # require "pry"; binding.pry
   end
 end
