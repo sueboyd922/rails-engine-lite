@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get "/api/v1/merchants", to: "api/v1/merchants#index"
+  get "/api/v1/merchants/find", to: "api/v1/merchants#find"
   get "/api/v1/merchants/:id", to: "api/v1/merchants#show"
   get "/api/v1/merchants/:id/items", to: "api/v1/merchants/items#index"
 
