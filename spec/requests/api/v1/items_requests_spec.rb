@@ -223,7 +223,7 @@ RSpec.describe 'Items API' do
 
   describe 'search functions' do
     describe 'find all items' do
-      it 'finds all items from a search' do
+      it 'finds all items from a name search' do
         merchant = create(:merchant)
         item_1 = create(:item, name: "Broomstick", merchant: merchant)
         item_2 = create(:item, name: "Dragon Egg", merchant: merchant)
@@ -277,6 +277,30 @@ RSpec.describe 'Items API' do
 
         expect(response.status).to eq(400)
       end
+
+      xit 'finds items by min price' do
+        merchant = create(:merchant)
+        item_1 = create(:item, merchant_id: merchant.id, unit_price: 3.90)
+        item_2 = create(:item, merchant_id: merchant.id, unit_price: 8.99)
+        item_3 = create(:item, merchant_id: merchant.id, unit_price: 2.75)
+        item_4 = create(:item, merchant_id: merchant.id, unit_price: 10.20)
+
+        get "/api/v1/items/find_all?min_price=4.00"
+        # require "pry"; binding.pry
+        expect(response).to be_successful
+        items_response = JSON.parse(response.body, symbolize_names: true)
+        item_results = items_response[:data]
+
+        expect(item_results.count).to eq 2
+        expect(item_results).to be_an Array
+      end
+
     end
   end
 end
+
+# merchant = create(:merchant)
+# item_1 = create(:item, name: "Pencil", merchant_id: merchant.id, unit_price: 3.90)
+# item_2 = create(:item, name: "Chair", merchant_id: merchant.id, unit_price: 8.99)
+# item_3 = create(:item, name: "Hammock", merchant_id: merchant.id, unit_price: 2.75)
+# item_4 = create(:item, name: "Robot Calendar", merchant_id: merchant.id, unit_price: 10.20)
