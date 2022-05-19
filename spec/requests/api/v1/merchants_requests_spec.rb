@@ -165,5 +165,37 @@ RSpec.describe "Merchants API" do
         expect(response.status).to eq(400)
       end
     end
+
+    describe 'find multiple merchants' do
+      it 'can find multiple merchants by name' do
+        merchant_1 = Merchant.create!(name: "Meat my Cows")
+        merchant_2 = Merchant.create!(name: "Veggie Bonanza")
+        merchant_3 = Merchant.create!(name: "All the Meats")
+        merchant_4 = Merchant.create!(name: "Viva las Veggies")
+
+        get "/api/v1/merchants/find_all?name=veggie"
+
+        merchants_response = JSON.parse(response.body, symbolize_names: true)
+        merchants = merchants_response[:data]
+
+        expect(response).to be_successful
+        expect(merchants).to be_an Array
+        expect(merchants.count).to eq(2)
+
+        merchants.each do |merchant|
+          expect(merchant).to be_a Hash
+
+          expect(merchant).to have_key(:id)
+          expect(merchant[:id]).to be_a String
+
+          expect(merchant).to have_key(:type)
+          expect(merchant[:type]).to eq("merchant")
+
+          expect(merchant[:attributes]).to have_key(:name)
+          expect(merchant[:attributes][:name]).to be_a String
+          expect(merchant[:attributes][:name].downcase.to_include?("veggie")).to be true
+        end
+      end
+    end
   end
 end
