@@ -184,8 +184,8 @@ RSpec.describe 'Items API' do
       expect(Item.exists?(item_1.id)).to be false
       expect(Invoice.exists?(invoice_1.id)).to be false
       expect(Invoice.exists?(invoice_2.id)).to be true
-      expect(Invoice.exists?(invoice_3.id)).to be true
       expect(invoice_2.invoice_items.count).to be 1
+      expect(Invoice.exists?(invoice_3.id)).to be true
       expect(invoice_3.invoice_items.count).to be 2
     end
   end

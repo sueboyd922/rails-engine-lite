@@ -43,7 +43,6 @@ class Api::V1::ItemsController < ApplicationController
       item.destroy
     else
       render status: 404
-
     end
   end
 
