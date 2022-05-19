@@ -26,12 +26,22 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+
   def find_all
     if params[:name].nil? || params[:name].empty?
       render status: 400
     else
       items = Item.find_all_by_name(params[:name])
       render json: ItemSerializer.format_items(items)
+
+  def destroy
+    if Item.exists?(params[:id])
+      item = Item.find(params[:id])
+      item.solo_invoices.each {|invoice| invoice.destroy }
+      item.destroy
+    else
+      render status: 404
+
     end
   end
 

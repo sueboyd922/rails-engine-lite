@@ -9,5 +9,5 @@ Rails.application.routes.draw do
   get "/api/v1/items/:id/merchant", to: "api/v1/item_merchant#show"
   post "/api/v1/items", to: "api/v1/items#create"
   put "/api/v1/items/:id", to: "api/v1/items#update"
-
+  delete "/api/v1/items/:id", to: "api/v1/items#destroy"
 end

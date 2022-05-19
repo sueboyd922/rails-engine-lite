@@ -136,6 +136,58 @@ RSpec.describe 'Items API' do
     end
   end
 
+
+  describe "delete functionality" do
+    it 'can delete an item' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      delete "/api/v1/items/#{item.id}"
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(Item.count).to be(0)
+      expect(Item.exists?(item.id)).to be false
+    end
+
+    it 'throws an error if item does not exist' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      delete "/api/v1/items/#{item.id + 1}"
+      expect(response.status).to eq(404)
+    end
+
+    it 'destroys invoices if it was only item on an invoice' do
+      merchant = create(:merchant)
+      customer = create(:customer)
+
+      items = create_list(:item, 3, merchant_id: merchant.id)
+      item_1 = items[0]
+      item_2 = items[1]
+      item_3 = items[2]
+
+      invoice_1 = Invoice.create!(merchant: merchant, customer: customer)
+      invoice_2 = Invoice.create!(merchant: merchant, customer: customer)
+      invoice_3 = Invoice.create!(merchant: merchant, customer: customer)
+
+      invoice_item_1 = InvoiceItem.create!(item: item_1, invoice: invoice_1)
+      invoice_item_2 = InvoiceItem.create!(item: item_1, invoice: invoice_2)
+      invoice_item_3 = InvoiceItem.create!(item: item_2, invoice: invoice_2)
+      invoice_item_4 = InvoiceItem.create!(item: item_1, invoice: invoice_3)
+      invoice_item_5 = InvoiceItem.create!(item: item_2, invoice: invoice_3)
+      invoice_item_6 = InvoiceItem.create!(item: item_3, invoice: invoice_3)
+
+      expect(invoice_2.invoice_items.count).to eq 2
+      expect(invoice_3.invoice_items.count).to eq 3
+      delete "/api/v1/items/#{item_1.id}"
+
+      expect(Item.exists?(item_1.id)).to be false
+      expect(Invoice.exists?(invoice_1.id)).to be false
+      expect(Invoice.exists?(invoice_2.id)).to be true
+      expect(Invoice.exists?(invoice_3.id)).to be true
+      expect(invoice_2.invoice_items.count).to be 1
+      expect(invoice_3.invoice_items.count).to be 2
+
   describe 'relationship with merchant' do
     it 'can return the merchant info for an item' do
       merchant = create(:merchant)
