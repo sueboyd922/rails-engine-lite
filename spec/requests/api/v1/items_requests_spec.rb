@@ -136,6 +136,7 @@ RSpec.describe 'Items API' do
     end
   end
 
+
   describe "delete functionality" do
     it 'can delete an item' do
       merchant = create(:merchant)
@@ -186,6 +187,35 @@ RSpec.describe 'Items API' do
       expect(Invoice.exists?(invoice_3.id)).to be true
       expect(invoice_2.invoice_items.count).to be 1
       expect(invoice_3.invoice_items.count).to be 2
+
+  describe 'relationship with merchant' do
+    it 'can return the merchant info for an item' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      get "/api/v1/items/#{item.id}/merchant"
+
+      expect(response).to be_successful
+      merchant_response = JSON.parse(response.body, symbolize_names: true)
+      returned_merchant = merchant_response[:data]
+
+      expect(returned_merchant).to have_key(:id)
+      expect(returned_merchant[:id]).to be_a String
+
+      expect(returned_merchant).to have_key(:type)
+      expect(returned_merchant[:type]).to eq("merchant")
+
+      expect(returned_merchant[:attributes]).to have_key(:name)
+      expect(returned_merchant[:attributes][:name]).to be_a String
+    end
+
+    it 'returns an error if the item does not exist' do
+      merchant = create(:merchant)
+      item = create(:item, merchant_id: merchant.id)
+
+      get "/api/v1/items/#{item.id + 1}/merchant"
+
+      expect(response.status).to eq(404)
     end
   end
 end
