@@ -20,4 +20,13 @@ class Api::V1::MerchantsController < ApplicationController
       end
     end
   end
+
+  def find_all
+    merchants = Merchant.find_by_name(params[:name])
+    if !merchants.nil?
+      render json: MerchantSerializer.format_merchants(merchants)
+    else
+      render json: MerchantSerializer.no_merchant
+    end
+  end
 end

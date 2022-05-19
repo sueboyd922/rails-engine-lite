@@ -193,7 +193,7 @@ RSpec.describe "Merchants API" do
 
           expect(merchant[:attributes]).to have_key(:name)
           expect(merchant[:attributes][:name]).to be_a String
-          expect(merchant[:attributes][:name].downcase.to_include?("veggie")).to be true
+          expect(merchant[:attributes][:name].downcase.include?("veggie")).to be true
         end
       end
     end
