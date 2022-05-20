@@ -26,16 +26,6 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
-
-  def find_all
-    if params[:name].nil? || params[:name].empty?
-      render status: 400
-    else
-      items = Item.find_all_by_name(params[:name])
-      render json: ItemSerializer.format_items(items)
-    end
-  end
-
   def destroy
     if Item.exists?(params[:id])
       item = Item.find(params[:id])
@@ -43,6 +33,48 @@ class Api::V1::ItemsController < ApplicationController
       item.destroy
     else
       render status: 404
+    end
+  end
+
+  def find
+    keys = params.keys
+    if keys.count == 2 || params.values.include?("")
+      render status: 400
+    elsif (keys.count == 5) || (keys.count == 4 && keys.include?("name"))
+      render status: 400
+    elsif keys.count == 4 && !keys.include?(:name)
+      item = Item.find_all_by_price("range", [params[:min_price], params[:max_price]]).first
+    elsif keys.count == 3
+      if params[:name]
+        item = Item.find_all_by_name(params[:name]).first
+      elsif params[:min_price].to_i > 0
+        item = Item.find_all_by_price("min", params[:min_price]).first
+      elsif params[:max_price].to_i > 0
+        item = Item.find_all_by_price("max", params[:max_price]).first
+      else
+        render status: 400
+      end
+    end
+    render json: ItemSerializer.one_item(item) if item
+  end
+
+  def find_all
+    keys = params.keys
+    if keys.count == 2 || params.values.include?("")
+      render status: 400
+    elsif (keys.count == 5) || (keys.count == 4 && keys.include?(:name))
+      render status: 400
+    elsif keys.count == 4 && !keys.include?(:name)
+      items = Item.find_all_by_price("range", [params[:min_price], params[:max_price]])
+    elsif keys.count == 3
+      if params[:name]
+        items = Item.find_all_by_name(params[:name])
+      elsif params[:min_price]
+        items = Item.find_all_by_price("min", params[:min_price])
+      elsif params[:max_price]
+        items = Item.find_all_by_price("max", params[:max_price])
+      end
+      render json: ItemSerializer.format_items(items)
     end
   end
 
