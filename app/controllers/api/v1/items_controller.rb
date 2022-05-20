@@ -26,42 +26,6 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
-
-  def find_all
-    find_alls = params.except(:controller, :action)
-    if find_alls.empty? || find_alls.values.include?("")
-      render status: 400
-    elsif find_alls.keys.count == 3
-      render status: 400
-    elsif find_alls.keys.count == 2
-      if find_alls.keys.include?(:name)
-        render status: 400
-      else
-        # find both min and max
-      end
-    elsif find_alls.keys.count == 1
-      if params[:name]
-        items = Item.find_all_by_name(params[:name])
-        render json: ItemSerializer.format_items(items)
-      elsif params[:min_price]
-        items = Item.find_all_by_price("min", params[:min_price])
-        render json: ItemSerializer.format_items(items)
-      elsif params[:max_price]
-          #serializer for max
-      end
-    end
-
-    # if params.keys.count == 2
-    #   render status: 400
-    # elsif params[:name].empty?
-    #   render status: 400
-    # elsif params[:name]
-    #   items = Item.find_all_by_name(params[:name])
-    #   render json: ItemSerializer.format_items(items)
-    # elsif params[:min_price]
-    # end
-  end
-
   def destroy
     if Item.exists?(params[:id])
       item = Item.find(params[:id])
@@ -69,6 +33,46 @@ class Api::V1::ItemsController < ApplicationController
       item.destroy
     else
       render status: 404
+    end
+  end
+
+  def find
+    keys = params.keys
+    if keys.count == 2 || params.values.include?("")
+      render status: 400
+    elsif (keys.count == 5) || (keys.count == 4 && keys.include?(:name))
+      render status: 400
+    elsif keys.count == 4 && !keys.include?(:name)
+      #find in range
+    elsif keys.count == 3
+      if params[:name]
+        item = Item.find_all_by_name(params[:name]).first
+      elsif params[:min_price]
+        item = Item.find_all_by_price("min", params[:min_price]).first
+      elsif params[:max_price]
+        item = Item.find_all_by_price("max", params[:max_price]).first
+      end
+      render json: ItemSerializer.one_item(item)
+    end
+  end
+
+  def find_all
+    keys = params.keys
+    if keys.count == 2 || params.values.include?("")
+      render status: 400
+    elsif (keys.count == 5) || (keys.count == 4 && keys.include?(:name))
+      render status: 400
+    elsif keys.count == 4 && !keys.include?(:name)
+      #find in range
+    elsif keys.count == 3
+      if params[:name]
+        items = Item.find_all_by_name(params[:name])
+      elsif params[:min_price]
+        items = Item.find_all_by_price("min", params[:min_price])
+      elsif params[:max_price]
+        items = Item.find_all_by_price("max", params[:max_price])
+      end
+      render json: ItemSerializer.format_items(items)
     end
   end
 

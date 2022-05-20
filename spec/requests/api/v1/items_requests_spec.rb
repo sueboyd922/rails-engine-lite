@@ -286,21 +286,75 @@ RSpec.describe 'Items API' do
         item_4 = create(:item, merchant_id: merchant.id, unit_price: 10.20)
 
         get "/api/v1/items/find_all?min_price=4.00"
-        # require "pry"; binding.pry
+
         expect(response).to be_successful
         items_response = JSON.parse(response.body, symbolize_names: true)
         item_results = items_response[:data]
 
         expect(item_results.count).to eq 2
         expect(item_results).to be_an Array
+
+        items_ids = item_results.map {|item| item[:id].to_i}
+        expect(items_ids.include?(item_4.id)).to be true
+        expect(items_ids.include?(item_2.id)).to be true
       end
 
+      it 'finds items by max price' do
+        merchant = create(:merchant)
+        item_1 = create(:item, merchant_id: merchant.id, unit_price: 3.90)
+        item_2 = create(:item, merchant_id: merchant.id, unit_price: 8.99)
+        item_3 = create(:item, merchant_id: merchant.id, unit_price: 2.75)
+        item_4 = create(:item, merchant_id: merchant.id, unit_price: 10.20)
+
+        get "/api/v1/items/find_all?max_price=8.99"
+
+        expect(response).to be_successful
+        items_response = JSON.parse(response.body, symbolize_names: true)
+        item_results = items_response[:data]
+
+        expect(item_results.count).to eq 3
+        expect(item_results).to be_an Array
+      end
+    end
+
+    describe 'find single item' do
+      it 'can find an item by min price' do
+        #ordered by alphabetical for some reason?
+        merchant = create(:merchant)
+        item_1 = create(:item, name: "Pencil", merchant_id: merchant.id, unit_price: 3.90)
+        item_2 = create(:item, name: "Chair", merchant_id: merchant.id, unit_price: 8.99)
+        item_3 = create(:item, name: "Hammock", merchant_id: merchant.id, unit_price: 2.75)
+        item_4 = create(:item, name: "Robot Calendar", merchant_id: merchant.id, unit_price: 10.20)
+
+        get "/api/v1/items/find?min_price=4.99"
+
+        expect(response).to be_successful
+        item_response = JSON.parse(response.body, symbolize_names: true)
+        item_result = item_response[:data]
+        expect(item_result).to be_a Hash
+
+        expect(item_result[:id]).to eq(item_2.id.to_s)
+      end
+
+      it 'can find an item by min price' do
+        #ordered by alphabetical for some reason?
+        merchant = create(:merchant)
+        item_1 = create(:item, name: "Pencil", merchant_id: merchant.id, unit_price: 3.90)
+        item_2 = create(:item, name: "Chair", merchant_id: merchant.id, unit_price: 8.99)
+        item_3 = create(:item, name: "Hammock", merchant_id: merchant.id, unit_price: 2.75)
+        item_4 = create(:item, name: "Robot Calendar", merchant_id: merchant.id, unit_price: 10.20)
+
+        get "/api/v1/items/find?max_price=10.19"
+
+        expect(response).to be_successful
+        item_response = JSON.parse(response.body, symbolize_names: true)
+        item_result = item_response[:data]
+        expect(item_result).to be_a Hash
+
+        expect(item_result[:id]).to eq(item_2.id.to_s)
+      end
     end
   end
 end
 
-# merchant = create(:merchant)
-# item_1 = create(:item, name: "Pencil", merchant_id: merchant.id, unit_price: 3.90)
-# item_2 = create(:item, name: "Chair", merchant_id: merchant.id, unit_price: 8.99)
-# item_3 = create(:item, name: "Hammock", merchant_id: merchant.id, unit_price: 2.75)
-# item_4 = create(:item, name: "Robot Calendar", merchant_id: merchant.id, unit_price: 10.20)
+#

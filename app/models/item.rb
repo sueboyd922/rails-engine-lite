@@ -20,7 +20,9 @@ class Item < ApplicationRecord
 
   def self.find_all_by_price(level, search)
     if level == "min"
-      where("unit_price >= ?", search)
+      where("unit_price >= ?", search).order(:name)
+    elsif level == "max"
+      where("unit_price <= ?", search).order(:name)
     end
   end
 end
