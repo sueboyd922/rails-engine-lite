@@ -37,7 +37,6 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find
-    # require "pry"; binding.pry
     keys = params.keys
     if keys.count == 2 || params.values.include?("")
       render status: 400
@@ -56,7 +55,7 @@ class Api::V1::ItemsController < ApplicationController
         render status: 400
       end
     end
-    render json: ItemSerializer.one_item(item)
+    render json: ItemSerializer.one_item(item) if item
   end
 
   def find_all
@@ -66,7 +65,7 @@ class Api::V1::ItemsController < ApplicationController
     elsif (keys.count == 5) || (keys.count == 4 && keys.include?(:name))
       render status: 400
     elsif keys.count == 4 && !keys.include?(:name)
-      #find in range
+      items = Item.find_all_by_price("range", [params[:min_price], params[:max_price]])
     elsif keys.count == 3
       if params[:name]
         items = Item.find_all_by_name(params[:name])
