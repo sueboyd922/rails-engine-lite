@@ -23,6 +23,8 @@ class Item < ApplicationRecord
       where("unit_price >= ?", search).order(:name)
     elsif level == "max"
       where("unit_price <= ?", search).order(:name)
+    elsif level == "range"
+      where(unit_price: search[0]..search[1]).order(:name)
     end
   end
 end

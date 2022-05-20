@@ -353,6 +353,24 @@ RSpec.describe 'Items API' do
 
         expect(item_result[:id]).to eq(item_2.id.to_s)
       end
+
+      it 'can find an item in a price range' do
+        #ordered by alphabetical for some reason?
+        merchant = create(:merchant)
+        item_1 = create(:item, name: "Pencil", merchant_id: merchant.id, unit_price: 3.90)
+        item_2 = create(:item, name: "Chair", merchant_id: merchant.id, unit_price: 8.99)
+        item_3 = create(:item, name: "Hammock", merchant_id: merchant.id, unit_price: 2.75)
+        item_4 = create(:item, name: "Robot Calendar", merchant_id: merchant.id, unit_price: 10.20)
+
+        get "/api/v1/items/find?min_price=1.19&max_price=8.00"
+
+        expect(response).to be_successful
+        item_response = JSON.parse(response.body, symbolize_names: true)
+        item_result = item_response[:data]
+        expect(item_result).to be_a Hash
+
+        expect(item_result[:id]).to eq(item_3.id.to_s)
+      end
     end
   end
 end
