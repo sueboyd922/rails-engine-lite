@@ -26,10 +26,6 @@ class MerchantSerializer
   end
 
   def self.no_merchant
-    {
-      data: {
-
-      }
-    }
+    { data: {} }
   end
 end

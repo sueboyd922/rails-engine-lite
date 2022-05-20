@@ -39,21 +39,27 @@ class Api::V1::ItemsController < ApplicationController
   def find
     keys = params.keys
     if keys.count == 2 || params.values.include?("")
-      render status: 400
+      render json: {error: 'search must exist'}, status: 400
     elsif (keys.count == 5) || (keys.count == 4 && keys.include?("name"))
-      render status: 400
+      render json: {error: 'cannot search name and price'}, status: 400
     elsif keys.count == 4 && !keys.include?(:name)
-      item = Item.find_all_by_price("range", [params[:min_price], params[:max_price]]).first
+      if params[:min_price] > params[:max_price]
+        render json: {error: 'min cannot exceed max'}, status: 400
+      else
+        item = Item.find_all_by_price("range", [params[:min_price], params[:max_price]]).first
+      end
     elsif keys.count == 3
       if params[:name]
         item = Item.find_all_by_name(params[:name]).first
-      elsif params[:min_price].to_i > 0
+      elsif params[:min_price].to_f > 0
         item = Item.find_all_by_price("min", params[:min_price]).first
-      elsif params[:max_price].to_i > 0
+      elsif params[:max_price].to_f > 0
         item = Item.find_all_by_price("max", params[:max_price]).first
-      else
-        render status: 400
+      elsif params[:max_price].to_f < 0 || params[:min_price].to_f < 0
+        render json: {error: 'price can not be less than 0'}, status: 400
+        fail = true
       end
+      render json: ItemSerializer.no_item if !item && fail != true
     end
     render json: ItemSerializer.one_item(item) if item
   end

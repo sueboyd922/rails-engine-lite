@@ -31,4 +31,7 @@ class ItemSerializer
     }
   end
 
+  def self.no_item
+    { data: {} }
+  end
 end
